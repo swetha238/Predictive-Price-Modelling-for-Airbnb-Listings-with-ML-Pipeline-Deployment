@@ -8,8 +8,6 @@
 ![Machine Learning](https://img.shields.io/badge/ML-XGBoost%20%7C%20CatBoost-orange.svg)
 
 
-[🚀 Live Demo](#deployment) • [📊 Features](#features) • [🛠️ Installation](#installation) • [📈 Model Performance](#model-performance)
-
 </div>
 
 ---
