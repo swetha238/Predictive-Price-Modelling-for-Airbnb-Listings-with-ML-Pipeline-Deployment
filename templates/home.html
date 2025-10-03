@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Airbnb Price Prediction</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+  <style>
+    body {
+    font-family: 'Montserrat', sans-serif;
+    text-align: center;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url('https://news.airbnb.com/wp-content/uploads/sites/4/2020/04/Airbnb_New_Zealand_Arrowtown_House.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    }
+
+    .login {
+        width: 50%;
+        margin: 0 auto;
+        border: 4px solid #007a87;
+        padding: 25px;
+        background-color: rgba(206, 209, 204, 0.95);
+        border-radius: 10px;
+     }
+
+      .login h1 {
+        font-family: 'Open Sans', sans-serif;
+        font-weight: 800;
+        color: #e84b50;
+        font-size: 38px;
+      }
+      
+      .login h2 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        text-align: left;
+    }     
+      
+    .login form {
+      text-align: left;
+    }
+
+    .login label {
+      font-weight: bold;
+    }
+
+    .login input[type="text"],
+    .login input[type="number"] {
+      width: calc(50% - 10px);
+      margin-bottom: 10px;
+    }
+
+    .login button {
+        width: 100%;
+        margin-top: 10px;
+        background-color: #ff5a5f;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .login button:hover {
+        background-color: #ff3b3f;
+    }
+
+    input[type="number"] {
+        padding: 6px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+        width: calc(100% - 22px);
+        margin-bottom: 10px;
+    }
+
+    input[type="range"] {
+        width: 40%;
+        margin-right: 10px;
+        -webkit-appearance: none;
+        background-color: #f1f1f1;
+        height: 10px;
+        border-radius: 5px;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: #ff5a5f;
+        cursor: pointer;
+    }
+
+    .result-card {
+        background-color: #d2f5de;
+        border: 2px solid #007a87;
+        border-radius: 10px;
+        padding: 15px;
+        font-weight: bold;
+        font-size: 24px;
+        margin: 0 auto;
+        max-width: 80%;
+        box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body>
+    <br>
+  <div class="login">
+    <h1>🏠 Airbnb Price Prediction</h1>
+    <br>
+    <hr>
+
+    <!-- Location Details -->
+    <h2>📍 Location Details</h2>
+    <form action="{{ url_for('predict')}}" method="post">
+        
+      <label for="country">Country:</label>
+        <select id="country" name="Country" required="required">
+          <option value="">Select Country</option>
+          </select>
+          <br>
+        
+        <label for="city">City:</label>
+          <select id="city" name="City" required="required">
+            <option value="">Select City</option>
+          </select>
+          <br>
+          
+        <label for="neighbourhood_cleansed">Neighbourhood:</label>
+          <select id="neighbourhood_cleansed" name="Neighbourhood Cleansed" required="required">
+            <option value="">Select Neighbourhood</option>
+          </select>
+          <br>
+
+      <!-- Listing Features -->
+      <hr>
+      <h2>🏡 Property Features</h2>
+      <label for="property_type">Property Type:</label>
+        <select id="property_type" name="Property Type" required="required">
+            <option value="">Select Property Type</option>
+        </select>
+        <br>
+
+        <label for="room_type">Room Type:</label>
+        <br>
+        <input type="radio" id="room_type_entire_place" name="Room Type" value="Entire home/apt"> Entire home/apt
+        <input type="radio" id="room_type_private_room" name="Room Type" value="Private room"> Private room
+        <input type="radio" id="room_type_shared_room" name="Room Type" value="Shared room"> Shared room
+        <br>
+
+    <br>
+        <label for="bed_type">Bed Type:</label>
+        <br>
+        <input type="radio" id="bed_type_real_bed" name="Bed Type" value="Real Bed"> Real Bed
+        <input type="radio" id="bed_type_pull_out_sofa" name="Bed Type" value="Pull-out Sofa"> Pull-out Sofa
+        <input type="radio" id="bed_type_futon" name="Bed Type" value="Futon"> Futon
+        <input type="radio" id="bed_type_couch" name="Bed Type" value="Couch"> Couch
+        <input type="radio" id="bed_type_airbed" name="Bed Type" value="Airbed"> Airbed
+        <br>
+
+      <br>
+      <label for="Accommodates">Accommodates:</label>
+      <input type="number" id="Accommodates" name="Accommodates" placeholder="Accommodates" required="required" value="3" /><br>
+
+      <label for="Bedrooms">Bedrooms:</label>
+      <input type="number" id="Bedrooms" name="Bedrooms" placeholder="Bedrooms" required="required" value="1" /><br>
+
+      <label for="Beds">Beds:</label>
+      <input type="number" id="Beds" name="Beds" placeholder="Beds" required="required" value="1" /><br>
+
+      <label for="cancellation_policy">Cancellation Policy:</label>
+        <select id="cancellation_policy" name="Cancellation Policy" required="required">
+        <option value="">Select Cancellation Policy</option>
+        </select>
+      <br>
+
+      <!-- Based on customer reviews -->
+      <hr>
+      <h2>⭐ Review Scores</h2>
+      <label for="NumberOfReviews">Number of Reviews:</label>
+      <input type="number" id="NumberOfReviews" name="Number of Reviews" placeholder="Number of Reviews" required="required" value="23" /><br>
+
+      <label for="HostSinceDays">Host Since Days:</label>
+      <input type="number" id="HostSinceDays" name="Host Since Days" placeholder="Host Since Days" required="required" value="3579" /><br>
+
+      <br>
+
+      <label for="host_response_time">Host Response Time:</label>
+      <br>
+      <input type="radio" id="host_response_time_within_hour" name="Host Response Time" value="within an hour"> within an hour
+      <input type="radio" id="host_response_time_within_few_hours" name="Host Response Time" value="within a few hours"> within a few hours
+      <input type="radio" id="host_response_time_within_day" name="Host Response Time" value="within a day"> within a day
+      <input type="radio" id="host_response_time_few_days_or_more" name="Host Response Time" value="a few days or more"> a few days or more
+      <br>
+
+      <br>
+    
+      <label for="ReviewScoresRating">Average Score:</label>
+      <input type="range" id="ReviewScoresRating" name="Review Scores Rating" min="20" max="100" step="0.1" value="93" />
+      <span id="ReviewScoresRatingValue">93</span><br>
+          
+      <br>
+      
+      <label for="ReviewScoresAccuracy">Accuracy Score:</label>
+      <input type="range" id="ReviewScoresAccuracy" name="Review Scores Accuracy" min="2" max="10" step="0.1" value="9.5" />
+      <span id="ReviewScoresAccuracyValue">9.5</span><br>
+          
+      <br>
+
+      <label for="ReviewScoresCleanliness">Cleanliness Score:</label>
+      <input type="range" id="ReviewScoresCleanliness" name="Review Scores Cleanliness" min="2" max="10" step="0.1" value="9.3" />
+      <span id="ReviewScoresCleanlinessValue">9.3</span><br>
+          
+      <br>
+
+      <label for="ReviewScoresCheckin">Checkin Score:</label>
+      <input type="range" id="ReviewScoresCheckin" name="Review Scores Checkin" min="2" max="10" step="0.1" value="9.7" />
+      <span id="ReviewScoresCheckinValue">9.7</span><br>
+          
+      <br>
+
+      <label for="ReviewScoresCommunication">Communication Score:</label>
+      <input type="range" id="ReviewScoresCommunication" name="Review Scores Communication" min="2" max="10" step="0.1" value="9.7" />
+      <span id="ReviewScoresCommunicationValue">9.7</span><br>
+          
+      <br>
+
+      <label for="ReviewScoresLocation">Location Score:</label>
+      <input type="range" id="ReviewScoresLocation" name="Review Scores Location" min="2" max="10" step="0.1" value="9.4" />
+      <span id="ReviewScoresLocationValue">9.4</span><br>
+          
+      <br>
+
+      <label for="ReviewScoresValue">Value Score:</label>
+      <input type="range" id="ReviewScoresValue" name="Review Scores Value" min="2" max="10" step="0.1" value="9.3" />
+      <span id="ReviewScoresValueValue">9.3</span><br>
+
+      <br>
+      <hr>
+      <br>
+      <button type="submit" class="btn btn-primary btn-block btn-large">🔮 Predict Price</button>
+      <br>
+    </form>
+  </div>
+  <br>
+  
+  {% if prediction_text %}
+  <div class="result-card">
+    {{prediction_text}}
+  </div>
+  {% endif %}
+
+<br>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.min.js"></script>
+
+<script>
+// Range slider functionality
+var rangeInputs = $("input[type='range']");
+
+function updateValueDisplay(rangeInput) {
+  var value = rangeInput.val();
+  var spanId = "#" + rangeInput.attr("id") + "Value";
+  $(spanId).text(value);
+}
+
+rangeInputs.each(function() {
+  updateValueDisplay($(this));
+});
+
+rangeInputs.on("input", function() {
+  updateValueDisplay($(this));
+});
+
+$(document).ready(function() {
+  // Data arrays
+  var countries = ['United States', 'Australia', 'Denmark', 'Ireland', 'United Kingdom', 'Hong Kong', 'Spain', 'France', 'Netherlands', 'Canada', 'Greece', 'Germany', 'Belgium', 'Italy', 'Austria', 'Switzerland'];
+
+  var cities = ['London', 'New York', 'Paris', 'Berlin', 'Madrid', 'Rome', 'Amsterdam', 'Vienna', 'Copenhagen', 'Dublin', 'Toronto', 'Vancouver', 'Sydney', 'Melbourne', 'Hong Kong', 'Barcelona', 'San Francisco', 'Los Angeles', 'Chicago', 'Boston', 'Seattle', 'Portland', 'Denver', 'Austin', 'Miami', 'Washington', 'Philadelphia', 'Atlanta', 'Phoenix', 'Las Vegas', 'San Diego', 'Nashville', 'New Orleans', 'Honolulu'];
+
+  var neighbourhoods = ['Williamsburg', 'Manhattan', 'Brooklyn Heights', 'Greenwich Village', 'SoHo', 'Chelsea', 'Westminster', 'Camden', 'Islington', 'Kensington', 'Montmartre', 'Le Marais', 'Saint-Germain', 'Champs-Élysées', 'Prenzlauer Berg', 'Mitte', 'Kreuzberg', 'Friedrichshain', 'Malasaña', 'Chueca', 'Gràcia', 'Eixample', 'Gothic Quarter', 'Centrum', 'Jordaan', 'De Pijp', 'Centro Storico', 'Trastevere', 'Monti', 'Testaccio'];
+
+  var propertyTypes = ['Apartment', 'House', 'Condominium', 'Loft', 'Townhouse', 'Villa', 'Cabin', 'Guesthouse', 'Bed & Breakfast', 'Bungalow', 'Chalet', 'Hostel', 'Boat', 'Serviced apartment', 'Castle', 'Vacation home', 'Boutique hotel', 'Treehouse', 'Camper/RV', 'Tent', 'Guest suite', 'Yurt', 'Hut', 'In-law', 'Cave', 'Nature lodge', 'Entire Floor', 'Earth House', 'Tipi'];
+
+  var cancellationPolicies = ['flexible', 'strict', 'moderate', 'moderate_new', 'flexible_new', 'strict_new', 'super_strict_60', 'super_strict_30', 'super_strict_30_new', 'super_strict_60_new'];
+
+  function initializeSelectize(elementId, optionList, placeholderText) {
+    $(elementId).selectize({
+      options: optionList.map(function(option) {
+        return {
+          text: option,
+          value: option
+        };
+      }),
+      placeholder: placeholderText,
+      create: false,
+      dropdownParent: 'body'
+    });
+  }
+  
+  // Initialize dropdowns
+  initializeSelectize('#country', countries, "Select Country");
+  initializeSelectize('#city', cities, "Select City");
+  initializeSelectize('#neighbourhood_cleansed', neighbourhoods, "Select Neighbourhood");
+  initializeSelectize('#property_type', propertyTypes, "Select Property Type");
+  initializeSelectize('#cancellation_policy', cancellationPolicies, "Select Cancellation Policy");
+
+  // Set default values
+  $('input[name="Room Type"][value="Entire home/apt"]').prop('checked', true);
+  $('input[name="Bed Type"][value="Real Bed"]').prop('checked', true);
+  $('input[name="Host Response Time"][value="within an hour"]').prop('checked', true);
+});
+</script>
+
+</html>
